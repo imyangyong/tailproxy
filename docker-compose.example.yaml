@@ -1,0 +1,52 @@
+services:
+  tailproxy:
+    build: .
+    container_name: tailproxy
+    # Required for setting up Tailscale
+    cap_add:
+      - NET_ADMIN
+    # Expose Docker container's tun device to Tailscale
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      # --- Begin of Tailscale configuration ---
+      # You can specify Tailscale environment variables as needed.
+
+      # Tailscale Auth Key: https://login.tailscale.com/admin/settings/keys
+      TS_AUTHKEY: "tskey-auth-XXXXX"
+      # Optional Tailscale magic DNS hostname
+      TS_HOSTNAME: "tailproxy-1"
+
+      # You can specify other Tailscale environment variables as needed.
+      # See Tailscale documentation for details.
+      # TS_ACCEPT_DNS: "true"
+
+      # Optional, Tailscale state directory (defaults to /var/lib/tailscale)
+      # TS_STATE_DIR: "/var/lib/tailscale"
+
+      # --- End of Tailscale configuration ---
+
+      # Optional SOCKS5 port. When not set, the SOCKS5 proxy will be disabled.
+      SOCKS5_PORT: "11188"
+      # Optional SOCKS5 authentication credentials.
+      # SOCKS5_USER: ""
+      # SOCKS5_PASSWORD: ""
+
+      # Optional Snell port. When not set, the Snell proxy will be disabled.
+      # You must enable at least one of SOCKS5_PORT or SNELL_PORT for TailProxy to be useful.
+      SNELL_PORT: "11189"
+      # Snell PSK (pre-shared key) for authentication.
+      # If you do not provide a PSK, a random one will be generated and printed in the container logs on startup.
+      SNELL_PSK: "my-secret-psk"
+      # SNELL_OBFS: "off"
+    ports:
+      - "11188:11188"
+      - "11189:11189"
+    volumes:
+      # Optional, persist Tailscale state (including authentication) across container restarts
+      # Must be consistent with TS_STATE_DIR if customized
+      - tailscale-state:/var/lib/tailscale
+    restart: unless-stopped
+
+volumes:
+  tailscale-state:
