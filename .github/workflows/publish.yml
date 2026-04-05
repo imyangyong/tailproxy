@@ -49,3 +49,5 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/tailproxy:${{ env.VERSION }}
             ghcr.io/${{ env.GHCR_IMAGE_NAME }}:${{ env.VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
