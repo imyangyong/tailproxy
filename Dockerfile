@@ -1,8 +1,6 @@
 FROM --platform=$BUILDPLATFORM tonistiigi/xx AS xx
 FROM --platform=$BUILDPLATFORM bitnami/minideb:bookworm AS build
 
-LABEL maintainer="SukkaW <https://skk.moe>"
-
 ARG SNELL_VERSION=5.0.1
 ARG SOCKS5_VERSION=2.11.2
 ARG TARGETPLATFORM
@@ -24,7 +22,9 @@ RUN xx-info env \
   && chmod +x /hev-socks5-server \
   && xx-verify /hev-socks5-server
 
-FROM bitnami/minideb:bookworm
+FROM debian:bookworm-slim
+
+LABEL maintainer="SukkaW <https://skk.moe>"
 
 ENV SOCKS5_PORT=
 ENV SOCKS5_USER=
@@ -37,7 +37,9 @@ ENV SNELL_OBFS=
 ENV TS_STATE_DIR=/var/lib/tailscale
 VOLUME /var/lib/tailscale
 
-RUN install_packages ca-certificates iptables iproute2
+RUN apt-get update \
+  && apt-get install --no-install-recommends -y ca-certificates iptables iproute2 \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=tailscale/tailscale:stable /usr/local/bin/containerboot /usr/local/bin/containerboot
 COPY --from=tailscale/tailscale:stable /usr/local/bin/tailscaled /usr/local/bin/tailscaled
