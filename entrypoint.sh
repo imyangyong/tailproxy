@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 launch() {
@@ -7,22 +7,13 @@ launch() {
     exit 1
   fi
 
-  # Ensure containerboot uses tun mode
+  # Ensure containerboot uses tun mode by default
   export TS_USERSPACE="${TS_USERSPACE:-false}"
 
-  # Start containerboot in the background — handles all TS_* env vars
-  containerboot &
+  # Build multirun command list
+  MULTIRUN_CMDS="containerboot"
 
-  # Wait for tailscale to be connected
-  echo "Waiting for tailscale to connect..."
-  while ! tailscale status --json 2>/dev/null | grep -q '"BackendState": "Running"'; do
-    sleep 1
-  done
-
-  echo "============================================"
-  echo "  tailscale is up ($(tailscale ip -4))"
-
-  # Start hev-socks5-server if SOCKS5_PORT is set
+  # Generate hev-socks5-server config
   if [ -n "${SOCKS5_PORT}" ]; then
     cat > /tmp/socks5.yml <<EOF
 main:
@@ -48,10 +39,10 @@ EOF
       echo "    socks5 auth: disabled"
     fi
 
-    hev-socks5-server /tmp/socks5.yml &
+    MULTIRUN_CMDS="${MULTIRUN_CMDS} /start-socks5.sh"
   fi
 
-  # Start snell-server if SNELL_PORT is set
+  # Generate snell-server config
   if [ -n "${SNELL_PORT}" ]; then
     SNELL_PSK="${SNELL_PSK:-$(head -c 16 /dev/urandom | od -A n -t x1 | tr -d ' \n')}"
     SNELL_OBFS="${SNELL_OBFS:-off}"
@@ -67,14 +58,14 @@ EOF
     echo "    snell psk: ${SNELL_PSK}"
     echo "    snell obfs: ${SNELL_OBFS}"
 
-    snell-server -c /tmp/snell.conf &
+    MULTIRUN_CMDS="${MULTIRUN_CMDS} /start-snell.sh"
   fi
 
   echo "============================================"
 
-  # Wait for any process to exit
-  wait -n
-  exit $?
+  # multirun handles PID 1, signal forwarding, zombie reaping,
+  # and kills all children when any one exits
+  exec multirun ${MULTIRUN_CMDS}
 }
 
 if [ -z "$*" ]; then

@@ -12,7 +12,7 @@ elif [ "${ARCH}" == "arm64" ]; then
 elif [ "${ARCH}" == "arm" ]; then
   echo "https://github.com/heiher/hev-socks5-server/releases/download/${VERSION}/hev-socks5-server-linux-arm32v7hf"
 else
-  echo "Usage: get-socks5-url.sh VERSION ARCH"
+  echo "Usage: build-get-socks5-url.sh VERSION ARCH"
   exit 1
 fi
 

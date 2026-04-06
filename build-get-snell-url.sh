@@ -15,7 +15,7 @@ elif [ "${ARCH}" == "arm64" ]; then
 elif [ "${ARCH}" == "arm" ]; then
   echo "https://dl.nssurge.com/snell/snell-server-v${VERSION}-linux-armv7l.zip"
 else
-  echo "Usage: get-snell-url.sh VERSION ARCH"
+  echo "Usage: build-get-snell-url.sh VERSION ARCH"
   exit 1
 fi
 
