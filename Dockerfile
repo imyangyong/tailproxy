@@ -22,7 +22,7 @@ RUN xx-info env \
   && chmod +x /hev-socks5-server \
   && xx-verify /hev-socks5-server
 
-FROM debian:bookworm-slim
+FROM frolvlad/alpine-glibc:latest
 
 LABEL maintainer="SukkaW <https://skk.moe>"
 
@@ -37,9 +37,7 @@ ENV SNELL_OBFS=
 ENV TS_STATE_DIR=/var/lib/tailscale
 VOLUME /var/lib/tailscale
 
-RUN apt-get update \
-  && apt-get install --no-install-recommends -y ca-certificates iptables iproute2 \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --update --no-cache ca-certificates iptables iproute2 bash libstdc++
 
 COPY --from=tailscale/tailscale:stable /usr/local/bin/containerboot /usr/local/bin/containerboot
 COPY --from=tailscale/tailscale:stable /usr/local/bin/tailscaled /usr/local/bin/tailscaled
