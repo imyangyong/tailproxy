@@ -1,7 +1,6 @@
 services:
   tailproxy:
-    build: .
-    container_name: tailproxy
+    image: sukka/tailproxy:latest
     # Required for setting up Tailscale
     cap_add:
       - NET_ADMIN

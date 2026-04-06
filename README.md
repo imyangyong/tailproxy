@@ -54,7 +54,7 @@ docker run -d \
   -p 11188:11188 \
   -p 11189:11189 \
   --restart unless-stopped \
-  tailproxy:latest
+  sukka/tailproxy:latest
 ```
 
 > You can also use `docker compose` to manage the TailProxy, and here is the [`docker-compose.example.yml`](docker-compose.example.yml).
