@@ -63,5 +63,6 @@ COPY --from=build /hev-socks5-server /usr/local/bin/hev-socks5-server
 COPY entrypoint.sh /entrypoint.sh
 COPY start-socks5.sh /start-socks5.sh
 COPY start-snell.sh /start-snell.sh
+COPY forward-to-host.sh /forward-to-host.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

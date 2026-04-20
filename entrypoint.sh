@@ -61,6 +61,8 @@ EOF
     MULTIRUN_CMDS="${MULTIRUN_CMDS} /start-snell.sh"
   fi
 
+  MULTIRUN_CMDS="${MULTIRUN_CMDS} /forward-to-host.sh"
+
   echo "============================================"
 
   # multirun handles PID 1, signal forwarding, zombie reaping,
